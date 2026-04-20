@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Kəlam | Ümumi Söhbət</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Saytın öz stilləri -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dark-oled.css">
+    
+    <style>
+        /* Çat üçün əlavə stillər */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 140px);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        .chat-header {
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-header i {
+            color: var(--accent-red);
+            font-size: 1.3rem;
+        }
+        
+        .chat-header h2 {
+            flex: 1;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+        
+        .online-count {
+            background: var(--accent-green);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+        }
+        
+        .message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .message.own .message-avatar {
+            background: var(--accent-red);
+        }
+        
+        .message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 18px;
+            border-top-left-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .message.own .message-content {
+            background: var(--accent-red);
+            color: white;
+            border-top-right-radius: 4px;
+            border-top-left-radius: 18px;
+        }
+        
+        .message-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--accent-red);
+        }
+        
+        .message.own .message-name {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .message-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 6px;
+            text-align: right;
+        }
+        
+        .chat-input-area {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border-radius: 40px;
+        }
+        
+        .chat-input-area input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            font-size: 1rem;
+            outline: none;
+            color: var(--text-primary);
+        }
+        
+        .chat-input-area input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        
+        .chat-input-area button {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .chat-input-area button:active {
+            transform: scale(0.9);
+            background: var(--accent-gold);
+        }
+        
+        .chat-input-area button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .login-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .login-message i {
+            font-size: 3rem;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+        
+        .system-message {
+            text-align: center;
+            padding: 8px 16px;
+            background: var(--border-light);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            align-self: center;
+        }
+        
+        /* Tünd tema üçün */
+        body.dark-oled .message-content {
+            background: #1a1a1a;
+            color: #e0d5c0;
+        }
+        
+        body.dark-oled .message.own .message-content {
+            background: var(--accent-red);
+        }
+        
+        body.dark-oled .chat-messages {
+            background: #0a0a0a;
+        }
+    </style>
+</head>
+<body>
+    <!-- Başlıq -->
+    <header class="app-header">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <a href="index.html" style="color: var(--accent-red); text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 style="font-size: 1.5rem;">
+                <i class="fas fa-comment-dots"></i> Ümumi Söhbət
+            </h1>
+        </div>
+        <div class="header-actions">
+            <i class="fas fa-users" id="usersBtn" onclick="showOnlineUsers()"></i>
+            <i class="fas fa-moon" onclick="toggleTheme()"></i>
+        </div>
+    </header>
+
+    <!-- Çat Konteyneri -->
+    <div class="chat-container" id="chatContainer">
+        <!-- Firebase yoxdursa giriş mesajı -->
+        <div class="login-message" id="noFirebaseMessage" style="display: none;">
+            <i class="fas fa-database"></i>
+            <h3>Firebase Konfiqurasiyası Tələb Olunur</h3>
+            <p style="margin-top: 16px; opacity: 0.7;">
+                Real-time söhbət funksiyasını aktivləşdirmək üçün Admin Paneldən 
+                Firebase konfiqurasiyasını əlavə edin.
+            </p>
+            <a href="admin.html" style="display: inline-block; margin-top: 24px; color: var(--accent-gold);">
+                <i class="fas fa-crown"></i> Admin Panelə Keç
+            </a>
+        </div>
+
+        <!-- Giriş tələb edən ekran -->
+        <div class="login-message" id="loginMessage">
+            <i class="fas fa-user-circle"></i>
+            <h3>Söhbətə Qoşulun</h3>
+            <p style="margin: 16px 0;">Ümumi söhbətə qatılmaq üçün adınızı daxil edin.</p>
+            <div style="display: flex; gap: 12px; max-width: 300px; margin: 0 auto;">
+                <input type="text" id="userNameInput" placeholder="Adınız" 
+                       style="flex: 1; padding: 14px 18px; border: 1px solid var(--border-light); border-radius: 30px; background: var(--bg-primary); color: var(--text-primary);">
+                <button class="btn btn-primary" onclick="joinChat()" style="padding: 14px 24px;">
+                    <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Aktiv Çat (Gizli başlayır) -->
+        <div id="activeChat" style="display: none; display: flex; flex-direction: column; height: 100%;">
+            <div class="chat-header">
+                <i class="fas fa-globe"></i>
+                <h2>Ümumi Otaq</h2>
+                <span class="online-count" id="onlineCount">
+                    <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                    <span id="onlineCountValue">0</span> onlayn
+                </span>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="system-message">Söhbətə xoş gəlmisiniz! 🕊️</div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="messageInput" placeholder="Mesajınızı yazın..." onkeypress="handleKeyPress(event)">
+                <button id="sendBtn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="js/storage.js"></script>
+    
+    <script>
+        // ===== QLOBAL DƏYİŞƏNLƏR =====
+        let firebaseApp = null;
+        let firestore = null;
+        let currentUser = null;
+        let messagesListener = null;
+        
+        // ===== SƏHİFƏ YÜKLƏNƏNDƏ =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkFirebaseConfig();
+            loadTheme();
+            
+            // Əvvəlki girişi yoxla
+            const savedUser = sessionStorage.getItem('kəlam_chat_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showActiveChat();
+            }
+        });
+        
+        // ===== FIREBASE YOXLAMASI =====
+        function checkFirebaseConfig() {
+            const configStr = localStorage.getItem('kəlam_firebase_config');
+            
+            if (!configStr) {
+                document.getElementById('noFirebaseMessage').style.display = 'block';
+                document.getElementById('loginMessage').style.display = 'none';
+                return false;
+            }
+            
+            try {
+                const config = JSON.parse(configStr);
+                firebaseApp = firebase.initializeApp(config, 'chatApp');
+                firestore = firebase.firestore();
+                return true;
+            } catch (e) {
+                console.error('Firebase xətası:', e);
+                document.getElementById('noFirebaseMessage').style.display = 'block';
+                document.getElementById('loginMessage').style.display = 'none';
+                return false;
+            }
+        }
+        
+        // ===== SÖHBƏTƏ QOŞUL =====
+        function joinChat() {
+            const nameInput = document.getElementById('userNameInput');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                alert('Zəhmət olmasa adınızı daxil edin.');
+                return;
+            }
+            
+            if (name.length < 2) {
+                alert('Ad ən azı 2 simvol olmalıdır.');
+                return;
+            }
+            
+            currentUser = {
+                name: name,
+                id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                color: getRandomColor()
+            };
+            
+            sessionStorage.setItem('kəlam_chat_user', JSON.stringify(currentUser));
+            showActiveChat();
+        }
+        
+        // ===== AKTİV ÇATI GÖSTƏR =====
+        function showActiveChat() {
+            if (!checkFirebaseConfig()) return;
+            
+            document.getElementById('loginMessage').style.display = 'none';
+            document.getElementById('activeChat').style.display = 'flex';
+            
+            // Mesajları dinlə
+            listenToMessages();
+            
+            // Sistem mesajı göndər
+            addSystemMessage(`${currentUser.name} söhbətə qoşuldu.`);
+            
+            // Onlayn sayını yenilə
+            updateOnlineCount();
+        }
+        
+        // ===== MESAJLARI DİNLƏ =====
+        function listenToMessages() {
+            if (messagesListener) {
+                messagesListener();
+            }
+            
+            messagesListener = firestore
+                .collection('chat_messages')
+                .orderBy('timestamp', 'desc')
+                .limit(50)
+                .onSnapshot((snapshot) => {
+                    const messages = [];
+                    snapshot.forEach(doc => {
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+                    displayMessages(messages.reverse());
+                });
+        }
+        
+        // ===== MESAJLARI GÖSTƏR =====
+        function displayMessages(messages) {
+            const container = document.getElementById('chatMessages');
+            
+            let html = '<div class="system-message">Söhbətə xoş gəlmisiniz! 🕊️</div>';
+            
+            messages.forEach(msg => {
+                const isOwn = msg.userId === currentUser.id;
+                const time = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString('az', { hour: '2-digit', minute: '2-digit' }) : '';
+                
+                html += `
+                    <div class="message ${isOwn ? 'own' : ''}">
+                        <div class="message-avatar" style="background: ${msg.userColor || '#D4AF37'}">
+                            ${msg.userName.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="message-content">
+                            <div class="message-name">${msg.userName}</div>
+                            <div class="message-text">${escapeHtml(msg.text)}</div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // ===== MESAJ GÖNDƏR =====
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            if (!firestore) {
+                alert('Firebase konfiqurasiyası yoxdur.');
+                return;
+            }
+            
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            
+            firestore.collection('chat_messages').add({
+                text: text,
+                userName: currentUser.name,
+                userId: currentUser.id,
+                userColor: currentUser.color,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                input.value = '';
+                sendBtn.disabled = false;
+                input.focus();
+            }).catch(error => {
+                console.error('Mesaj göndərilmədi:', error);
+                alert('Mesaj göndərilə bilmədi. Yenidən cəhd edin.');
+                sendBtn.disabled = false;
+            });
+        }
+        
+        // ===== SİSTEM MESAJI =====
+        function addSystemMessage(text) {
+            if (!firestore) return;
+            
+            firestore.collection('chat_messages').add({
+                text: text,
+                userName: 'Sistem',
+                userId: 'system',
+                userColor: '#6B6B6B',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                isSystem: true
+            });
+        }
+        
+        // ===== ONLAYN SAYI =====
+        function updateOnlineCount() {
+            // Sadəcə vizual - real onlayn sayı üçün əlavə kod lazımdır
+            document.getElementById('onlineCountValue').textContent = '1';
+        }
+        
+        // ===== KLAVİŞ İDARƏSİ =====
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // ===== TEMA =====
+        function toggleTheme() {
+            document.body.classList.toggle('dark-oled');
+            const isDark = document.body.classList.contains('dark-oled');
+            saveSettings({ theme: isDark ? 'oled' : 'light' });
+        }
+        
+        function loadTheme() {
+            const settings = getSettings();
+            if (settings.theme === 'oled') {
+                document.body.classList.add('dark-oled');
+            }
+        }
+        
+        // ===== KÖMƏKÇİ FUNKSİYALAR =====
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function getRandomColor() {
+            const colors = ['#8B1A1A', '#2E4A2E', '#D4AF37', '#4A6B4A', '#6B3A2A', '#4A4A6B'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        function showOnlineUsers() {
+            alert('Onlayn istifadəçilər: 1 nəfər');
+        }
+        
+        // Səhifə bağlananda
+        window.addEventListener('beforeunload', function() {
+            if (currentUser && firestore) {
+                addSystemMessage(`${currentUser.name} söhbətdən ayrıldı.`);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Kəlam | Oxu</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Saytın öz stilləri -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/reader.css">
+    <link rel="stylesheet" href="css/dark-oled.css">
+</head>
+<body class="reader-container">
+    <!-- ===== OXU BAŞLIĞI ===== -->
+    <header class="reader-header">
+        <div class="reader-header-left">
+            <i class="fas fa-arrow-left back-btn" onclick="goBack()"></i>
+            <div class="book-selector">
+                <select id="bookSelect" onchange="onBookChange()">
+                    <option value="">Kitab seçin...</option>
+                </select>
+            </div>
+        </div>
+        <div class="reader-header-right">
+            <i class="fas fa-font" id="fontSizeBtn" onclick="toggleFontControls()"></i>
+            <i class="fas fa-volume-up" id="voiceBtn" onclick="toggleVoiceControls()"></i>
+            <i class="fas fa-moon" id="themeToggle" onclick="toggleTheme()"></i>
+        </div>
+    </header>
+
+    <!-- ===== ŞRİFT KONTROLLERİ ===== -->
+    <div class="font-controls" id="fontControls" style="display: none;">
+        <button class="font-btn active" data-size="medium" onclick="setFontSize('medium')">A</button>
+        <button class="font-btn" data-size="large" onclick="setFontSize('large')">A</button>
+        <button class="font-btn" data-size="xlarge" onclick="setFontSize('xlarge')">A</button>
+        <span style="margin: 0 10px;">|</span>
+        <button class="font-btn" onclick="toggleLineSpacing()">
+            <i class="fas fa-arrows-alt-v"></i>
+        </button>
+    </div>
+
+    <!-- ===== FƏSİL NAVİQASİYASI (ÜST) ===== -->
+    <div style="display: flex; align-items: center; justify-content: center; padding: 12px 16px; gap: 16px; border-bottom: 1px solid var(--border-light);">
+        <button class="chapter-btn" id="prevChapterTop" onclick="goToPrevChapter()" disabled>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="chapter-number">
+            Fəsil <span id="currentChapterDisplay">1</span> / <span id="totalChaptersDisplay">50</span>
+        </span>
+        <button class="chapter-btn" id="nextChapterTop" onclick="goToNextChapter()">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- ===== SÜRƏTLİ AYƏ KEÇİD ===== -->
+    <div class="quick-jump">
+        <input type="text" id="quickJumpInput" placeholder="Məs: 5:3 və ya Matta 5:3" onkeypress="handleQuickJump(event)">
+        <button onclick="performQuickJump()">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- ===== OXU SAHƏSİ ===== -->
+    <div class="reader-content" id="readerContent">
+        <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+            <i class="fas fa-book-open" style="font-size: 3rem; opacity: 0.3; margin-bottom: 20px;"></i>
+            <p>Kitab yüklənir...</p>
+        </div>
+    </div>
+
+    <!-- ===== FƏSİL NAVİQASİYASI (ALT) ===== -->
+    <div class="chapter-navigation">
+        <button class="nav-chapter-btn" id="prevChapterBottom" onclick="goToPrevChapter()" disabled>
+            <i class="fas fa-chevron-left"></i> Əvvəlki Fəsil
+        </button>
+        <button class="nav-chapter-btn" id="nextChapterBottom" onclick="goToNextChapter()">
+            Növbəti Fəsil <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- ===== SƏSLİ OXUMA KONTROLLERİ ===== -->
+    <div class="voice-controls" id="voiceControls">
+        <button class="voice-btn" id="voicePlayBtn" onclick="toggleVoicePlay()">
+            <i class="fas fa-play"></i>
+        </button>
+        <button class="voice-btn" id="voiceStopBtn" onclick="stopVoice()">
+            <i class="fas fa-stop"></i>
+        </button>
+        <div class="voice-speed">
+            <button class="speed-option active" data-speed="1.0" onclick="setVoiceSpeed(1.0)">1x</button>
+            <button class="speed-option" data-speed="1.5" onclick="setVoiceSpeed(1.5)">1.5x</button>
+            <button class="speed-option" data-speed="2.0" onclick="setVoiceSpeed(2.0)">2x</button>
+        </div>
+        <div class="voice-progress" id="voiceProgress">
+            <div class="voice-progress-bar" id="voiceProgressBar" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <!-- ===== QEYD PANELİ ===== -->
+    <div class="overlay" id="overlay" onclick="closeNotesPanel()"></div>
+    <div class="notes-panel" id="notesPanel">
+        <div class="notes-panel-header">
+            <h4><i class="fas fa-pen"></i> Qeyd Əlavə Et</h4>
+            <i class="fas fa-times" onclick="closeNotesPanel()"></i>
+        </div>
+        <div class="verse-ref-display" id="currentVerseRefDisplay"></div>
+        <textarea id="noteInput" placeholder="Qeydinizi bura yazın..."></textarea>
+        <button class="btn btn-primary" onclick="saveCurrentNote()">
+            <i class="fas fa-save"></i> Yadda Saxla
+        </button>
+        <button class="btn btn-outline" style="margin-top: 12px; width: 100%;" onclick="deleteCurrentNote()">
+            <i class="fas fa-trash-alt"></i> Qeydi Sil
+        </button>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="js/storage.js"></script>
+    <script src="data/custom_books.js"></script>
+    <script src="js/bible-engine.js"></script>
+    
+    <script>
+        // ===== QLOBAL DƏYİŞƏNLƏR =====
+        let currentBookType = 'bible';
+        let currentBookId = 'GEN';
+        let currentChapter = 1;
+        let currentVerse = 1;
+        let activeVerseRef = '';
+        let voiceUtterance = null;
+        let voiceSpeed = 1.0;
+        let isVoicePlaying = false;
+        
+        // ===== SƏHİFƏ YÜKLƏNƏNDƏ =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // URL parametrlərini oxu
+            const params = new URLSearchParams(window.location.search);
+            currentBookType = params.get('type') || 'bible';
+            currentBookId = params.get('book') || 'GEN';
+            currentChapter = parseInt(params.get('chapter')) || 1;
+            currentVerse = parseInt(params.get('verse')) || 1;
+            
+            // Kitab seçimini doldur
+            populateBookSelect();
+            
+            // Fəsili yüklə
+            loadChapter();
+            
+            // Parametrləri yüklə
+            loadSettings();
+            
+            // Oxuma irəliləyişini yadda saxla (avtomatik)
+            setInterval(saveCurrentProgress, 5000);
+        });
+        
+        // ===== KİTAB SEÇİMİNİ DOLDUR =====
+        function populateBookSelect() {
+            const select = document.getElementById('bookSelect');
+            
+            // İncil kitabları
+            const oldTestament = BibleEngine.getAllBooks('old');
+            const newTestament = BibleEngine.getAllBooks('new');
+            
+            let html = '<optgroup label="Əhdi-Ətiq">';
+            oldTestament.forEach(book => {
+                html += `<option value="bible_${book.id}" ${currentBookType === 'bible' && currentBookId === book.id ? 'selected' : ''}>${book.name}</option>`;
+            });
+            html += '</optgroup><optgroup label="Əhdi-Cədid">';
+            newTestament.forEach(book => {
+                html += `<option value="bible_${book.id}" ${currentBookType === 'bible' && currentBookId === book.id ? 'selected' : ''}>${book.name}</option>`;
+            });
+            
+            // Digər kitablar
+            if (typeof customBooksList !== 'undefined') {
+                html += '</optgroup><optgroup label="Digər Kitablar">';
+                customBooksList.forEach(book => {
+                    html += `<option value="custom_${book.id}" ${currentBookType === 'custom' && currentBookId === book.id ? 'selected' : ''}>${book.nameAz}</option>`;
+                });
+            }
+            
+            html += '</optgroup>';
+            select.innerHTML = html;
+        }
+        
+        // ===== KİTAB DƏYİŞDİ =====
+        function onBookChange() {
+            const select = document.getElementById('bookSelect');
+            const value = select.value;
+            
+            if (!value) return;
+            
+            const parts = value.split('_');
+            currentBookType = parts[0];
+            currentBookId = parts.slice(1).join('_');
+            currentChapter = 1;
+            
+            updateUrl();
+            loadChapter();
+        }
+        
+        // ===== FƏSİLİ YÜKLƏ =====
+        function loadChapter() {
+            let verses = {};
+            let totalChapters = 0;
+            
+            if (currentBookType === 'bible') {
+                verses = BibleEngine.getBibleChapter(currentBookId, currentChapter);
+                const bookInfo = BibleEngine.getBookInfo(currentBookId);
+                totalChapters = bookInfo ? bookInfo.chapters : 0;
+            } else {
+                verses = typeof getCustomBookChapter === 'function' ? getCustomBookChapter(currentBookId, currentChapter) : {};
+                const bookInfo = typeof getCustomBookInfo === 'function' ? getCustomBookInfo(currentBookId) : null;
+                totalChapters = bookInfo ? bookInfo.chapters : 0;
+            }
+            
+            // Başlığı yenilə
+            updateHeader();
+            
+            // Fəsil göstəricisini yenilə
+            document.getElementById('currentChapterDisplay').textContent = currentChapter;
+            document.getElementById('totalChaptersDisplay').textContent = totalChapters;
+            
+            // Naviqasiya düymələrini yenilə
+            updateNavButtons(totalChapters);
+            
+            // Ayələri göstər
+            const content = document.getElementById('readerContent');
+            
+            if (Object.keys(verses).length === 0) {
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-book" style="font-size: 3rem; opacity: 0.3; margin-bottom: 20px;"></i>
+                        <p>Bu fəsil hələ əlavə edilməyib.</p>
+                        <p style="font-size: 0.9rem; opacity: 0.6; margin-top: 10px;">Admin paneldən əlavə edə bilərsiniz.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            const sortedVerses = Object.entries(verses).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+            
+            for (const [verseNum, text] of sortedVerses) {
+                const note = getNote(currentBookType, currentBookId, currentChapter, parseInt(verseNum));
+                const bookmark = isBookmarked(currentBookType, currentBookId, currentChapter, parseInt(verseNum));
+                
+                html += `
+                    <div class="verse-item" id="verse-${verseNum}">
+                        <div class="verse-header">
+                            <span class="verse-num">${verseNum}</span>
+                            <div class="verse-actions">
+                                <i class="far fa-sticky-note" onclick="openNotesPanel('${currentBookType}', '${currentBookId}', ${currentChapter}, ${verseNum})" title="Qeyd əlavə et"></i>
+                                <i class="far fa-bookmark ${bookmark ? 'fas' : 'far'}" onclick="toggleVerseBookmark('${currentBookType}', '${currentBookId}', ${currentChapter}, ${verseNum}, '${text.replace(/'/g, "\\'")}')" title="Əlfəcin"></i>
+                                <i class="fas fa-share-alt" onclick="shareVerse('${currentBookType}', '${currentBookId}', ${currentChapter}, ${verseNum})" title="Paylaş"></i>
+                            </div>
+                        </div>
+                        <div class="verse-text">
+                            ${text}
+                            ${note ? '<div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 12px; font-size: 0.9rem; border-left: 3px solid var(--accent-gold);"><i class="fas fa-pen" style="margin-right: 8px; opacity: 0.6;"></i>' + note.text + '</div>' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = html;
+            
+            // Hədəf ayəyə sürüş
+            if (currentVerse > 1) {
+                setTimeout(() => {
+                    const verseEl = document.getElementById(`verse-${currentVerse}`);
+                    if (verseEl) {
+                        verseEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        verseEl.classList.add('highlight');
+                        setTimeout(() => verseEl.classList.remove('highlight'), 2000);
+                    }
+                }, 300);
+            }
+            
+            // İrəliləyişi yadda saxla
+            saveCurrentProgress();
+        }
+        
+        // ===== BAŞLIĞI YENİLƏ =====
+        function updateHeader() {
+            let bookName = currentBookId;
+            
+            if (currentBookType === 'bible') {
+                const info = BibleEngine.getBookInfo(currentBookId);
+                bookName = info ? info.name : currentBookId;
+            } else {
+                const info = typeof getCustomBookInfo === 'function' ? getCustomBookInfo(currentBookId) : null;
+                bookName = info ? info.nameAz : currentBookId;
+            }
+            
+            document.title = `${bookName} ${currentChapter} | Kəlam`;
+        }
+        
+        // ===== NAVİQASİYA DÜYMƏLƏRİNİ YENİLƏ =====
+        function updateNavButtons(totalChapters) {
+            const prevBtns = ['prevChapterTop', 'prevChapterBottom'];
+            const nextBtns = ['nextChapterTop', 'nextChapterBottom'];
+            
+            prevBtns.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = (currentChapter <= 1);
+            });
+            
+            nextBtns.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = (currentChapter >= totalChapters);
+            });
+        }
+        
+        // ===== FƏSİL KEÇİDLƏRİ =====
+        function goToPrevChapter() {
+            if (currentChapter > 1) {
+                currentChapter--;
+                currentVerse = 1;
+                updateUrl();
+                loadChapter();
+            }
+        }
+        
+        function goToNextChapter() {
+            currentChapter++;
+            currentVerse = 1;
+            updateUrl();
+            loadChapter();
+        }
+        
+        // ===== URL YENİLƏ =====
+        function updateUrl() {
+            const url = `reader.html?type=${currentBookType}&book=${currentBookId}&chapter=${currentChapter}&verse=${currentVerse}`;
+            window.history.replaceState({}, '', url);
+        }
+        
+        // ===== İRƏLİLƏYİŞİ YADDA SAXLA =====
+        function saveCurrentProgress() {
+            if (currentBookId && currentChapter) {
+                const visibleVerse = getVisibleVerse();
+                if (visibleVerse) {
+                    currentVerse = visibleVerse;
+                }
+                saveReadingProgress(currentBookType, currentBookId, currentChapter, currentVerse);
+            }
+        }
+        
+        function getVisibleVerse() {
+            const verses = document.querySelectorAll('.verse-item');
+            for (let verse of verses) {
+                const rect = verse.getBoundingClientRect();
+                if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
+                    const id = verse.id;
+                    if (id) {
+                        return parseInt(id.replace('verse-', ''));
+                    }
+                }
+            }
+            return currentVerse;
+        }
+        
+        // ===== QEYD PANELİ =====
+        function openNotesPanel(type, bookId, chapter, verse) {
+            const verseText = getVerseText(type, bookId, chapter, verse);
+            const bookName = getBookDisplayName(type, bookId);
+            
+            activeVerseRef = `${type}_${bookId}_${chapter}_${verse}`;
+            
+            document.getElementById('currentVerseRefDisplay').innerHTML = `
+                <strong>${bookName} ${chapter}:${verse}</strong><br>
+                <span style="font-size: 0.9rem;">${verseText}</span>
+            `;
+            
+            const note = getNote(type, bookId, chapter, verse);
+            document.getElementById('noteInput').value = note ? note.text : '';
+            
+            document.getElementById('notesPanel').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+        
+        function closeNotesPanel() {
+            document.getElementById('notesPanel').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+        
+        function saveCurrentNote() {
+            if (!activeVerseRef) return;
+            
+            const parts = activeVerseRef.split('_');
+            const type = parts[0];
+            const bookId = parts[1];
+            const chapter = parseInt(parts[2]);
+            const verse = parseInt(parts[3]);
+            
+            const noteText = document.getElementById('noteInput').value;
+            saveNote(type, bookId, chapter, verse, noteText);
+            
+            closeNotesPanel();
+            loadChapter(); // Yenilə
+        }
+        
+        function deleteCurrentNote() {
+            if (!activeVerseRef) return;
+            
+            if (confirm('Qeydi silmək istədiyinizə əminsiniz?')) {
+                const parts = activeVerseRef.split('_');
+                deleteNote(parts[0], parts[1], parseInt(parts[2]), parseInt(parts[3]));
+                closeNotesPanel();
+                loadChapter();
+            }
+        }
+        
+        // ===== KÖMƏKÇİ FUNKSİYALAR =====
+        function getVerseText(type, bookId, chapter, verse) {
+            if (type === 'bible') {
+                return BibleEngine.getBibleVerse(bookId, chapter, verse) || '';
+            } else {
+                return typeof getCustomBookVerse === 'function' ? getCustomBookVerse(bookId, chapter, verse) || '' : '';
+            }
+        }
+        
+        function getBookDisplayName(type, bookId) {
+            if (type === 'bible') {
+                const info = BibleEngine.getBookInfo(bookId);
+                return info ? info.name : bookId;
+            } else {
+                const info = typeof getCustomBookInfo === 'function' ? getCustomBookInfo(bookId) : null;
+                return info ? info.nameAz : bookId;
+            }
+        }
+        
+        // ===== ƏLFƏCİN =====
+        function toggleVerseBookmark(type, bookId, chapter, verse, text) {
+            const isAdded = toggleBookmark(type, bookId, chapter, verse, text);
+            loadChapter(); // Yenilə
+            
+            // Bildiriş
+            if (isAdded) {
+                alert('✅ Ayə əlfəcinlərə əlavə edildi.');
+            }
+        }
+        
+        // ===== PAYLAŞ =====
+        function shareVerse(type, bookId, chapter, verse) {
+            const url = `${window.location.origin}/reader.html?type=${type}&book=${bookId}&chapter=${chapter}&verse=${verse}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Kəlam',
+                    text: `${getBookDisplayName(type, bookId)} ${chapter}:${verse}`,
+                    url: url
+                });
+            } else {
+                navigator.clipboard?.writeText(url);
+                alert('Link kopyalandı!');
+            }
+        }
+        
+        // ===== TEMA DƏYİŞ =====
+        function toggleTheme() {
+            document.body.classList.toggle('dark-oled');
+            const isDark = document.body.classList.contains('dark-oled');
+            saveSettings({ theme: isDark ? 'oled' : 'light' });
+        }
+        
+        // ===== ŞRİFT KONTROLLERİ =====
+        function toggleFontControls() {
+            const controls = document.getElementById('fontControls');
+            controls.style.display = controls.style.display === 'none' ? 'flex' : 'none';
+        }
+        
+        function setFontSize(size) {
+            document.querySelectorAll('.font-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const sizes = { medium: '1.15rem', large: '1.35rem', xlarge: '1.6rem' };
+            document.querySelectorAll('.verse-text').forEach(el => el.style.fontSize = sizes[size]);
+            saveSettings({ fontSize: size });
+        }
+        
+        function toggleLineSpacing() {
+            const current = document.querySelector('.verse-text')?.style.lineHeight || '1.8';
+            const spacings = { '1.6': 'compact', '1.8': 'normal', '2.2': 'spacious' };
+            const next = current === '1.8' ? '2.2' : (current === '2.2' ? '1.6' : '1.8');
+            document.querySelectorAll('.verse-text').forEach(el => el.style.lineHeight = next);
+            saveSettings({ lineSpacing: spacings[next] });
+        }
+        
+        // ===== SƏSLİ OXUMA =====
+        function toggleVoiceControls() {
+            const controls = document.getElementById('voiceControls');
+            controls.classList.toggle('active');
+        }
+        
+        function toggleVoicePlay() {
+            if (isVoicePlaying) {
+                window.speechSynthesis.pause();
+                isVoicePlaying = false;
+                document.getElementById('voicePlayBtn').innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                } else {
+                    speakCurrentChapter();
+                }
+                isVoicePlaying = true;
+                document.getElementById('voicePlayBtn').innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        }
+        
+        function speakCurrentChapter() {
+            window.speechSynthesis.cancel();
+            
+            const verses = document.querySelectorAll('.verse-text');
+            let fullText = '';
+            verses.forEach(v => fullText += v.textContent + ' ');
+            
+            voiceUtterance = new SpeechSynthesisUtterance(fullText);
+            voiceUtterance.lang = 'az-AZ';
+            voiceUtterance.rate = voiceSpeed;
+            
+            voiceUtterance.onend = () => {
+                isVoicePlaying = false;
+                document.getElementById('voicePlayBtn').innerHTML = '<i class="fas fa-play"></i>';
+            };
+            
+            window.speechSynthesis.speak(voiceUtterance);
+        }
+        
+        function stopVoice() {
+            window.speechSynthesis.cancel();
+            isVoicePlaying = false;
+            document.getElementById('voicePlayBtn').innerHTML = '<i class="fas fa-play"></i>';
+        }
+        
+        function setVoiceSpeed(speed) {
+            voiceSpeed = speed;
+            document.querySelectorAll('.speed-option').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (voiceUtterance) {
+                voiceUtterance.rate = speed;
+            }
+            saveSettings({ voiceSpeed: speed });
+        }
+        
+        // ===== SÜRƏTLİ KEÇİD =====
+        function handleQuickJump(event) {
+            if (event.key === 'Enter') {
+                performQuickJump();
+            }
+        }
+        
+        function performQuickJump() {
+            const input = document.getElementById('quickJumpInput');
+            const value = input.value.trim();
+            
+            // Format: "5:3" və ya "Matta 5:3"
+            let bookId = currentBookId;
+            let chapter = currentChapter;
+            let verse = 1;
+            
+            const match = value.match(/(?:([^\d]+)\s*)?(\d+):(\d+)/);
+            if (match) {
+                if (match[1]) {
+                    // Kitab adı ilə axtar
+                    const searchName = match[1].trim().toLowerCase();
+                    const found = [...BibleEngine.getAllBooks(), ...(typeof customBooksList !== 'undefined' ? customBooksList : [])]
+                        .find(b => b.name?.toLowerCase() === searchName || b.nameAz?.toLowerCase() === searchName);
+                    if (found) bookId = found.id;
+                }
+                chapter = parseInt(match[2]);
+                verse = parseInt(match[3]);
+            }
+            
+            currentChapter = chapter;
+            currentVerse = verse;
+            
+            if (bookId !== currentBookId) {
+                currentBookId = bookId;
+                populateBookSelect();
+            }
+            
+            updateUrl();
+            loadChapter();
+            input.value = '';
+        }
+        
+        // ===== GERİ QAYIT =====
+        function goBack() {
+            saveCurrentProgress();
+            window.location.href = 'index.html';
+        }
+        
+        // ===== PARAMETRLƏRİ YÜKLƏ =====
+        function loadSettings() {
+            const settings = getSettings();
+            
+            if (settings.theme === 'oled') {
+                document.body.classList.add('dark-oled');
+            }
+            
+            if (settings.fontSize) {
+                setFontSize(settings.fontSize);
+            }
+            
+            voiceSpeed = settings.voiceSpeed || 1.0;
+        }
+        
+        // Səhifə bağlananda irəliləyişi yadda saxla
+        window.addEventListener('beforeunload', function() {
+            saveCurrentProgress();
+        });
+    </script>
+</body>
+</html>

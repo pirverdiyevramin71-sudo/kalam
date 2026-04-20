@@ -1,0 +1,483 @@
+/* =========================================
+   KƏLAM PLATFORMASI - OXU SƏHİFƏSİ STİLİ
+   Fayl: css/reader.css
+   ========================================= */
+
+/* Oxu Səhifəsi Konteyneri */
+.reader-container {
+    min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+/* Oxu Başlığı */
+.reader-header {
+    padding: 12px 16px;
+    background: rgba(249, 246, 240, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.reader-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.back-btn {
+    font-size: 1.3rem;
+    color: var(--accent-red);
+    padding: 8px;
+    cursor: pointer;
+}
+
+.book-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-secondary);
+    padding: 6px 14px;
+    border-radius: 30px;
+    border: 1px solid var(--border-light);
+}
+
+.book-selector select {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1rem;
+    outline: none;
+    padding: 4px 0;
+}
+
+.chapter-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chapter-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-red);
+    font-size: 1.2rem;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.chapter-btn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.chapter-number {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 40px;
+    text-align: center;
+}
+
+.reader-header-right {
+    display: flex;
+    gap: 16px;
+}
+
+.reader-header-right i {
+    font-size: 1.2rem;
+    color: var(--accent-red);
+    cursor: pointer;
+    padding: 8px;
+}
+
+/* Oxu Sahəsi */
+.reader-content {
+    padding: 20px 16px 40px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Ayə Kartı */
+.verse-item {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+    position: relative;
+    transition: background 0.2s;
+}
+
+.verse-item.highlight {
+    background: rgba(212, 175, 55, 0.15);
+    border-radius: 12px;
+    padding: 12px 12px 12px 16px;
+    margin-left: -4px;
+    border-bottom: none;
+}
+
+.verse-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.verse-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-gold);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.verse-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.verse-item:hover .verse-actions {
+    opacity: 1;
+}
+
+.verse-actions i {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+}
+
+.verse-actions i:active {
+    color: var(--accent-red);
+    background: var(--border-light);
+}
+
+.verse-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+    padding-left: 36px;
+}
+
+/* Qeyd Paneli */
+.notes-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    padding: 24px 20px 30px;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+    z-index: 300;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.notes-panel.active {
+    transform: translateY(0);
+}
+
+.notes-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.notes-panel-header h4 {
+    color: var(--accent-red);
+    font-size: 1.2rem;
+}
+
+.notes-panel-header i {
+    color: var(--text-secondary);
+    font-size: 1.3rem;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.verse-ref-display {
+    background: var(--bg-secondary);
+    padding: 12px 16px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    font-style: italic;
+    border-left: 4px solid var(--accent-gold);
+}
+
+.notes-panel textarea {
+    width: 100%;
+    background: var(--bg-primary);
+    border: 1.5px solid var(--border-light);
+    border-radius: 20px;
+    padding: 18px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 150px;
+    margin-bottom: 20px;
+    outline: none;
+    font-family: inherit;
+}
+
+.notes-panel textarea:focus {
+    border-color: var(--accent-gold);
+}
+
+.notes-panel .btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.1rem;
+}
+
+/* Overlay (Qeyd Paneli Arxa Fonu) */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 250;
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* Səsli Oxuma Kontrolleri */
+.voice-controls {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: white;
+    border-radius: 60px;
+    padding: 8px 16px 8px 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 80;
+    transform: scale(0);
+    transition: transform 0.2s;
+    transform-origin: bottom right;
+}
+
+.voice-controls.active {
+    transform: scale(1);
+}
+
+.voice-btn {
+    background: none;
+    border: none;
+    color: var(--accent-red);
+    font-size: 1.3rem;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.voice-speed {
+    display: flex;
+    gap: 4px;
+}
+
+.speed-option {
+    background: var(--bg-secondary);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.speed-option.active {
+    background: var(--accent-gold);
+    color: white;
+}
+
+.voice-progress {
+    width: 80px;
+    height: 3px;
+    background: var(--border-light);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.voice-progress-bar {
+    height: 100%;
+    background: var(--accent-red);
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+/* Fəsil Naviqasiyası (Alt) */
+.chapter-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-light);
+    position: sticky;
+    bottom: 75px;
+}
+
+.nav-chapter-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    padding: 12px 24px;
+    border-radius: 40px;
+    color: var(--text-primary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.nav-chapter-btn:active {
+    background: var(--accent-gold);
+    color: white;
+    border-color: var(--accent-gold);
+}
+
+.nav-chapter-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.nav-chapter-btn i {
+    font-size: 0.9rem;
+}
+
+/* Şrift Ölçüsü Kontrolleri */
+.font-controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 40px;
+    margin: 0 16px 16px;
+}
+
+.font-btn {
+    background: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+}
+
+.font-btn.active {
+    background: var(--accent-red);
+    color: white;
+}
+
+/* Ayəyə Keçid (Sürətli) */
+.quick-jump {
+    padding: 0 16px 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.quick-jump input {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 30px;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.quick-jump input:focus {
+    border-color: var(--accent-gold);
+}
+
+.quick-jump button {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    padding: 0 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Mobil Uyğunlaşdırmalar */
+@media (max-width: 480px) {
+    .reader-content {
+        padding: 16px 12px;
+    }
+    
+    .verse-text {
+        font-size: 1.05rem;
+        padding-left: 32px;
+    }
+    
+    .book-selector select {
+        font-size: 0.9rem;
+    }
+    
+    .nav-chapter-btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Tünd Qaranlıq Mod Dəstəyi */
+body.dark-oled .reader-container {
+    background: #000;
+}
+
+body.dark-oled .reader-header {
+    background: rgba(10, 10, 10, 0.98);
+    border-bottom-color: #222;
+}
+
+body.dark-oled .verse-item {
+    border-bottom-color: #1a1a1a;
+}
+
+body.dark-oled .verse-text {
+    color: #e0d5c0;
+}
+
+body.dark-oled .notes-panel {
+    background: #111;
+}
+
+body.dark-oled .verse-ref-display {
+    background: #1a1a1a;
+}

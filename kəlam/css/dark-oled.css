@@ -1,0 +1,384 @@
+/* =========================================
+   KƏLAM PLATFORMASI - OLED QARANLIQ REJİMİ
+   Fayl: css/dark-oled.css
+   ========================================= */
+
+body.dark-oled {
+    --bg-primary: #000000;
+    --bg-secondary: #0A0A0A;
+    --text-primary: #E8DCC8;
+    --text-secondary: #B8A88A;
+    --accent-gold: #D4AF37;
+    --accent-red: #C41E3A;
+    --accent-green: #1B3B1B;
+    --border-light: #1A1A1A;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+body.dark-oled {
+    background: #000000;
+    color: #E8DCC8;
+}
+
+/* Header */
+body.dark-oled .app-header {
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom-color: #1A1A1A;
+}
+
+body.dark-oled .app-header h1 {
+    color: #D4AF37;
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+body.dark-oled .header-actions i {
+    color: #D4AF37;
+}
+
+/* Axtarış Overlay */
+body.dark-oled .search-overlay {
+    background: #000000;
+}
+
+body.dark-oled .search-container {
+    background: #0A0A0A;
+    border-color: #2A2A2A;
+}
+
+body.dark-oled .search-container input {
+    color: #E8DCC8;
+}
+
+body.dark-oled .search-container input::placeholder {
+    color: #6A5A4A;
+}
+
+body.dark-oled .search-result-item {
+    background: #0A0A0A;
+    border-left-color: #D4AF37;
+    border-bottom: 1px solid #1A1A1A;
+}
+
+body.dark-oled .search-result-item .ref {
+    color: #D4AF37;
+}
+
+body.dark-oled .search-result-item .text {
+    color: #B8A88A;
+}
+
+/* Davam Et Kartları */
+body.dark-oled .continue-card {
+    background: #0A0A0A;
+    border-color: #2A2A2A;
+}
+
+body.dark-oled .continue-card .book-icon {
+    background: #1B3B1B;
+}
+
+body.dark-oled .continue-card h4 {
+    color: #D4AF37;
+}
+
+body.dark-oled .continue-card p {
+    color: #B8A88A;
+}
+
+body.dark-oled .continue-card .progress {
+    color: #D4AF37;
+}
+
+/* Günün Sözü */
+body.dark-oled .daily-verse-card {
+    background: linear-gradient(145deg, #0A0A0A, #050505);
+    border-color: #D4AF37;
+}
+
+body.dark-oled .badge {
+    background: #C41E3A;
+}
+
+body.dark-oled .verse-text {
+    color: #E8DCC8;
+}
+
+body.dark-oled .verse-ref {
+    color: #D4AF37;
+}
+
+/* Kateqoriyalar */
+body.dark-oled .cat-card {
+    background: #0A0A0A;
+    border-color: #2A2A2A;
+}
+
+body.dark-oled .cat-card i {
+    color: #D4AF37;
+}
+
+body.dark-oled .cat-card span {
+    color: #E8DCC8;
+}
+
+body.dark-oled .cat-card:active {
+    background: #1A1A1A;
+    border-color: #D4AF37;
+}
+
+/* Alt Naviqasiya */
+body.dark-oled .bottom-nav {
+    background: rgba(0, 0, 0, 0.98);
+    border-top-color: #1A1A1A;
+}
+
+body.dark-oled .nav-item {
+    color: #8A7A6A;
+}
+
+body.dark-oled .nav-item.active {
+    color: #D4AF37;
+}
+
+body.dark-oled .nav-item.active i {
+    color: #D4AF37;
+}
+
+/* Reader Səhifəsi Elementləri */
+body.dark-oled .reader-header {
+    background: rgba(0, 0, 0, 0.98);
+    border-bottom-color: #1A1A1A;
+}
+
+body.dark-oled .back-btn {
+    color: #D4AF37;
+}
+
+body.dark-oled .book-selector {
+    background: #0A0A0A;
+    border-color: #2A2A2A;
+}
+
+body.dark-oled .book-selector select {
+    color: #E8DCC8;
+}
+
+body.dark-oled .chapter-btn {
+    color: #D4AF37;
+}
+
+body.dark-oled .chapter-btn:disabled {
+    color: #3A3A3A;
+}
+
+body.dark-oled .chapter-number {
+    color: #E8DCC8;
+}
+
+body.dark-oled .reader-header-right i {
+    color: #D4AF37;
+}
+
+/* Ayələr */
+body.dark-oled .verse-item {
+    border-bottom-color: #1A1A1A;
+}
+
+body.dark-oled .verse-item.highlight {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+body.dark-oled .verse-num {
+    background: #D4AF37;
+    color: #000000;
+}
+
+body.dark-oled .verse-actions i {
+    color: #8A7A6A;
+    background: #0A0A0A;
+}
+
+body.dark-oled .verse-actions i:active {
+    color: #D4AF37;
+    background: #1A1A1A;
+}
+
+body.dark-oled .verse-text {
+    color: #E8DCC8;
+}
+
+/* Qeyd Paneli */
+body.dark-oled .notes-panel {
+    background: #0A0A0A;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+}
+
+body.dark-oled .notes-panel-header h4 {
+    color: #D4AF37;
+}
+
+body.dark-oled .verse-ref-display {
+    background: #050505;
+    border-left-color: #D4AF37;
+    color: #B8A88A;
+}
+
+body.dark-oled .notes-panel textarea {
+    background: #000000;
+    border-color: #2A2A2A;
+    color: #E8DCC8;
+}
+
+body.dark-oled .notes-panel textarea:focus {
+    border-color: #D4AF37;
+}
+
+body.dark-oled .notes-panel .btn-primary {
+    background: #C41E3A;
+}
+
+body.dark-oled .notes-panel .btn-primary:active {
+    background: #A01830;
+}
+
+/* Overlay */
+body.dark-oled .overlay {
+    background: rgba(0,0,0,0.8);
+}
+
+/* Səsli Oxuma */
+body.dark-oled .voice-controls {
+    background: #0A0A0A;
+    border-color: #2A2A2A;
+}
+
+body.dark-oled .voice-btn {
+    color: #D4AF37;
+}
+
+body.dark-oled .speed-option {
+    background: #050505;
+    color: #8A7A6A;
+}
+
+body.dark-oled .speed-option.active {
+    background: #D4AF37;
+    color: #000000;
+}
+
+body.dark-oled .voice-progress {
+    background: #1A1A1A;
+}
+
+body.dark-oled .voice-progress-bar {
+    background: #D4AF37;
+}
+
+/* Fəsil Naviqasiyası */
+body.dark-oled .chapter-navigation {
+    background: #000000;
+    border-top-color: #1A1A1A;
+}
+
+body.dark-oled .nav-chapter-btn {
+    background: #0A0A0A;
+    border-color: #2A2A2A;
+    color: #E8DCC8;
+}
+
+body.dark-oled .nav-chapter-btn:active {
+    background: #D4AF37;
+    color: #000000;
+    border-color: #D4AF37;
+}
+
+/* Şrift Kontrolleri */
+body.dark-oled .font-controls {
+    background: #0A0A0A;
+}
+
+body.dark-oled .font-btn {
+    background: #050505;
+    color: #E8DCC8;
+}
+
+body.dark-oled .font-btn.active {
+    background: #C41E3A;
+    color: white;
+}
+
+/* Sürətli Keçid */
+body.dark-oled .quick-jump input {
+    background: #0A0A0A;
+    border-color: #2A2A2A;
+    color: #E8DCC8;
+}
+
+body.dark-oled .quick-jump input:focus {
+    border-color: #D4AF37;
+}
+
+body.dark-oled .quick-jump input::placeholder {
+    color: #6A5A4A;
+}
+
+body.dark-oled .quick-jump button {
+    background: #C41E3A;
+}
+
+/* Düymələr */
+body.dark-oled .btn-primary {
+    background: #C41E3A;
+    color: white;
+}
+
+body.dark-oled .btn-primary:active {
+    background: #A01830;
+}
+
+body.dark-oled .btn-gold {
+    background: #D4AF37;
+    color: #000000;
+}
+
+body.dark-oled .btn-gold:active {
+    background: #B8960C;
+}
+
+body.dark-oled .btn-outline {
+    border-color: #D4AF37;
+    color: #D4AF37;
+}
+
+body.dark-oled .btn-outline:active {
+    background: #D4AF37;
+    color: #000000;
+}
+
+/* Scrollbar Stili */
+body.dark-oled ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+body.dark-oled ::-webkit-scrollbar-track {
+    background: #0A0A0A;
+}
+
+body.dark-oled ::-webkit-scrollbar-thumb {
+    background: #D4AF37;
+    border-radius: 4px;
+}
+
+body.dark-oled ::-webkit-scrollbar-thumb:hover {
+    background: #C41E3A;
+}
+
+/* Keçid Animasiyası */
+body.dark-oled,
+body.dark-oled * {
+    transition: background-color 0.2s ease, 
+                border-color 0.2s ease, 
+                color 0.15s ease;
+}
